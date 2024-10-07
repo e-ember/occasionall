@@ -74,7 +74,42 @@ def callback():
     headers={"Authorization": "Bearer " + token}
 
 
+    user_tracks = requests.get("https://api.spotify.com/v1/me/tracks/?limit=50", headers=headers).json()
+    inspo_songs_ids = []
     
+
+    for i in range(4):
+        random_user_track = user_tracks['items'][random.randrange(1,50)]
+        inspo_songs_ids.append(random_user_track['track']['id'])
+        print(random_user_track['track']['name'])
+    
+    string_ids = ','.join(inspo_songs_ids)
+
+
+    url_parts = {"seed_genres":characters[9], 
+                 "seed_tracks":string_ids, 
+                 "target_acousticness":float(characters[0]), 
+                 "target_danceability":float(characters[1]), 
+                 "target_energy":float(characters[2]), 
+                 "target_instrumentalness":float(characters[3]), 
+                 "target_liveness":float(characters[4]), 
+                 "target_loudness":float(characters[5]), 
+                 "target_speechiness":float(characters[6]), 
+                 "target_tempo":float(characters[7]), 
+                 "target_valence": float(characters[8])}
+
+    access_url = "https://api.spotify.com/v1/recommendations?" + urllib.parse.urlencode(url_parts)
+
+    response = requests.get(access_url, headers=headers)
+
+    data = response.json()
+
+
+    song_recs = []
+
+    for track in data['tracks']:
+        # song_recs.append(track['external_urls']['spotify'])
+        song_recs.append(track['name']+" "+track['artists'][0]['name'])
 
     
 
