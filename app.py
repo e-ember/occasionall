@@ -114,4 +114,6 @@ def callback():
     
     # return render_template("results.html", recommendations=playlist['uri']+"\n"+playlist['external_urls']['spotify'])
 
-    return redirect(str(playlist['external_urls']['spotify']))
+    final_response = {"playlist_uri":playlist['external_urls']['spotify']}
+
+    return final_response
