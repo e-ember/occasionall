@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 from dotenv import load_dotenv
 import random, string, urllib.parse, os
 from spotipy import oauth2, client
@@ -68,52 +68,48 @@ def callback():
 
     model = ggai.GenerativeModel(model_name="gemini-1.5-flash")
 
-    prompt = "This is the description of my event: " + str(request.form.get("eventdetails")) + ". Consider the combination of the factors acoustiness, danceability, energy, instrumentalness, liveliness, loudness, speechiness, tempo, and valence to form the music best suited for this event. Between 0 to 1, what float most represents the acousticness, danceability, energy, instrumentalness, liveliness, loudness, speechiness, tempo, and valence best suited for this event? What is a Spotify genre best suited for this event? Return your data, one number for each factor, in the format of acousticness, danceability, energy, instrumentalness, liveliness, loudness, speechiness, tempo, valence, genre, and nothing else."
+    event_details = str(request.form.get("eventdetails"))
+
+    prompt = "This is the description of my event: " + event_details + ". What are three Spotify musical genres best suited for this event? Return only the genre names in the format genre1 genre2 genre3 and nothing else."
 
     output = model.generate_content(prompt)
-    characters = str(output.text)[:-1].split(", ")
 
     headers={"Authorization": "Bearer " + token}
 
-
-    user_tracks = requests.get("https://api.spotify.com/v1/me/tracks/?limit=50", headers=headers).json()
-    inspo_songs_ids = []
-    
-
-    for i in range(4):
-        random_user_track = user_tracks['items'][random.randrange(1,50)]
-        inspo_songs_ids.append(random_user_track['track']['id'])
-        print(random_user_track['track']['name'])
-    
-    string_ids = ','.join(inspo_songs_ids)
+    print(output.text)
 
 
-    url_parts = {"seed_genres":characters[9], 
-                 "seed_tracks":string_ids, 
-                 "target_acousticness":float(characters[0]), 
-                 "target_danceability":float(characters[1]), 
-                 "target_energy":float(characters[2]), 
-                 "target_instrumentalness":float(characters[3]), 
-                 "target_liveness":float(characters[4]), 
-                 "target_loudness":float(characters[5]), 
-                 "target_speechiness":float(characters[6]), 
-                 "target_tempo":float(characters[7]), 
-                 "target_valence": float(characters[8])}
-
-    access_url = "https://api.spotify.com/v1/recommendations?" + urllib.parse.urlencode(url_parts)
-
-    response = requests.get(access_url, headers=headers)
-
-    data = response.json()
+    search_url = "https://api.spotify.com/v1/search?"+urllib.parse.urlencode({"q":str(output.text)+"vibes", "type":"track", "limit":30})
 
 
-    song_recs = []
+    data = requests.get(search_url, headers=headers).json()
 
-    for track in data['tracks']:
-        # song_recs.append(track['external_urls']['spotify'])
-        song_recs.append(track['name']+" "+track['artists'][0]['name'])
+    recommendations = []
+    for track in data['tracks']['items']:
+        recommendations.append(track['id'])
 
     
+    prompt = "Make a short three-word-or-less name summarizing: " + event_details + ". Return only those three words"
+    output = model.generate_content(prompt)
 
-    return render_template("results.html", recommendations=song_recs)
+    body = {"name":str(output.text)}
 
+    user_id = requests.get("https://api.spotify.com/v1/me/", headers=headers).json()['id']
+
+    playlist = requests.post(f"https://api.spotify.com/v1/users/{user_id}/playlists/", headers=headers, json=body).json()
+
+    songs = []
+
+    print(recommendations)
+
+    for id in recommendations:
+        songs.append("spotify:track:"+id)
+
+    songs_data = {"uris":songs}
+
+    print(songs_data)
+
+
+    add_songs = requests.post(f"https://api.spotify.com/v1/playlists/{playlist['id']}/tracks", headers=headers, json=songs_data)
+    
+    return render_template("results.html", recommendations=playlist['uri'])
