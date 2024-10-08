@@ -1,14 +1,46 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
 
-{% block body %}
+<html lang="en">
+    <head>
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+        <title>Hybrid</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 
-<h1>Hybrid</h1>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <script>
+            function submit_form(){
+                if (document.getElementById('eventdetails').value == ""){
+                    alert("Please input event details!")
+                }
+            }
+        </script>
+        <div id="github">
+            <a href="https://github.com/e-ember/occasionall">GitHub</a>
+        </div>  
 
-<form action='{{ url_for("callback") }}' method="POST">
-<label>Input information about your event</label><br>
-<input type="text" id="eventdetails" name="eventdetails"><br>
-<button type="submit">Submit and Login to Spotify</button>
-</form>
+        <div style="height:90vh; display:flex; justify-content: center; flex-direction: column;">
+            <div id="header">
+                <h1 id="title">OccasionAll</h1>
+                <p id="description">A personalized playlist for any occasion, made just for you</p>
+            </div>
 
-{% endblock %}
+            <div id="form">
+                <form onsubmit="return submit_form();" action="{{url_for('callback')}}" method="POST">
+                <div style="width:60%; text-align: center; margin:auto;">
+                    <div style="text-align: right;">
+                        <textarea id="eventdetails" name="eventdetails" placeholder="What's your event about?" style="border-radius: 5px; resize:none;" rows=15></textarea><br>
+                    </div>
+                    <div id="submit">
+                        <button type="submit">Submit</button>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
 

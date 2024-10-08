@@ -15,13 +15,10 @@ app = Flask(__name__)
 load_dotenv()
 
 
-
 #---------------- spotify portion ----------------------
 #set default index html page
 @app.route("/", methods=['GET', 'POST'])
 def index():
-
-
     return render_template("index.html")
 
 #create a random state string to secure user information
@@ -114,4 +111,10 @@ def callback():
     
     # return render_template("results.html", recommendations=playlist['uri']+"\n"+playlist['external_urls']['spotify'])
 
+<<<<<<< Updated upstream
     return redirect(str(playlist['external_urls']['spotify']))
+=======
+    # final_response = {"playlist_uri":playlist['external_urls']['spotify']}
+
+    return redirect(playlist['external_urls']['spotify'])
+>>>>>>> Stashed changes
