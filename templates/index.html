@@ -29,15 +29,16 @@
             </div>
 
             <div id="form">
-                <form onsubmit="return submit_form();" action="{{url_for('callback')}}" method="POST">
-                <div style="width:60%; text-align: center; margin:auto;">
-                    <div style="text-align: right;">
-                        <textarea id="eventdetails" name="eventdetails" placeholder="What's your event about?" style="border-radius: 5px; resize:none;" rows=15></textarea><br>
+                <form onsubmit="return submit_form()" action="{{ url_for('login') }}" method="post">
+                    <div style="width:60%; text-align: center; margin:auto;">
+                        <div style="text-align: right;">
+                            <textarea id="eventdetails" name="eventdetails" placeholder="What's your event about?" style="border-radius: 5px; resize:none;" rows=10></textarea><br>
+                            
+                        </div>
+                        <div id="submit">
+                            <button type="submit">Submit</button>
+                        </div>
                     </div>
-                    <div id="submit">
-                        <button type="submit">Submit</button>
-                    </div>
-                </div>
                 </form>
             </div>
         </div>
