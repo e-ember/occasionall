@@ -10,11 +10,13 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     </head>
+
     <body>
         <script>
             function submit_form(){
                 if (document.getElementById('eventdetails').value == ""){
                     alert("Please input event details!")
+                    return false
                 }
             }
         </script>
@@ -32,7 +34,7 @@
                 <form onsubmit="return submit_form()" action="{{ url_for('login') }}" method="post">
                     <div style="width:60%; text-align: center; margin:auto;">
                         <div style="text-align: right;">
-                            <textarea id="eventdetails" name="eventdetails" placeholder="What's your event about?" style="border-radius: 5px; resize:none;" rows=10></textarea><br>
+                            <textarea id="eventdetails" name="eventdetails" placeholder="What's your event about?" style="border-radius: 5px; resize:none;" rows=10 type="text"></textarea><br>
                             
                         </div>
                         <div id="submit">
