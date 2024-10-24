@@ -19,10 +19,10 @@ app.secret_key=secrets.token_hex(16)
 #set default index html page
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    if request.method == "POST":
-        return redirect(url_for('login'))
-
     return render_template("index.html")
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 #create a random state string to secure user information
 state = ""
